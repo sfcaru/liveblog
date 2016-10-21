@@ -21,7 +21,17 @@ liveblogSyndication
                 priority: 100,
                 adminTools: true,
                 resolve: {isArchivedFilterSelected: function() {return false;}}
+            })
+            .activity('/syndication/producers/', {
+                label: gettext('Producers Blogs'),
+                controller: 'SyndicationProducersController',
+                templateUrl: 'scripts/liveblog-syndication/views/syndication-producers.html',
+                category: superdesk.MENU_MAIN,
+                priority: 100,
+                adminTools: false,
+                resolve: {isArchivedFilterSelected: function() {return false;}}
             });
+ 
     }])
     .config(['apiProvider', function(apiProvider) {
         apiProvider
