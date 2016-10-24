@@ -9,9 +9,11 @@ from superdesk.services import BaseService
 from superdesk import get_resource_service
 from flask import Blueprint, make_response
 from apps.auth import SuperdeskTokenAuth
+from flask_cors import CORS
 
 logger = logging.getLogger('superdesk')
 producers_blueprint = Blueprint('producers', __name__)
+CORS(producers_blueprint)
 
 
 producers_schema = {
@@ -79,7 +81,7 @@ def producer_blogs(producer_id):
             'Content-Type': 'application/json'
         })
     except ConnectionError:
-        return _make_json_response(_make_error('Unable to connect to producer.'))
+        return _make_json_response(_make_error('Unable to connect to producer: {}'.format(api_url)))
     else:
         status_code = response.status_code
         if status_code == 200:
