@@ -1,5 +1,7 @@
-<ul>
-    <li ng-repeat="producer in producers._items">
-        {{producer.name}}
-    </li>
-</ul>
+<section class="main-section users">
+    <ul class="list-group">
+        <li ng-repeat="producer in producers._items" class="list-group-item">
+            <a href="/#/syndication/producers/{{producer._id}}">{{producer.name}}</a>
+        </li>
+    </ul>
+</section>
