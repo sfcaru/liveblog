@@ -14,7 +14,7 @@ liveblogSyndication
                     $scope.blogsView = 'grid';
                 });
 
-            $scope.syndicate = function(blogId) {
-                console.log('ima gonna syndicate that blog', blogId);
+            $scope.syndicate = function(blog) {
+                console.log('ima gonna syndicate that blog', blog._id, blog.syndicated);
             };
         }])

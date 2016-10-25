@@ -51,9 +51,11 @@
                         </dl>
                         <dt>Syndication</dt>
                         <dd>
-                            <button 
-                                ng-click="syndicate(blog._id)"
-                                class="btn btn-default">Syndicatable</button>
+                            <span
+                                sd-switch 
+                                ng-change="syndicate(blog)" 
+                                ng-model="blog.syndicated" 
+                                class="sms-switch"></span>
                         </dd>
                     </dl>
                 </div>
