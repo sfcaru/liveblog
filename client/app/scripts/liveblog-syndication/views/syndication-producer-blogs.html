@@ -17,10 +17,6 @@
         <!-- empty state -->
         <div ng-if="blogs._meta.total === 0" class="empty-state">
             <div translate>No blogs found.</div>
-            <!--<button ng-if="activeState.code === 'open'" class="btn btn-info btn-large" ng-click="openNewBlog();">-->
-            <!--    <i class="svg-icon-add inverse"></i>-->
-            <!--    <span class="title" translate>Create a Blog</span>-->
-            <!--</button>-->
         </div>
         <!-- GRID VIEW -->
         <ul class="card-list" ng-if="blogsView === 'grid'">
@@ -52,133 +48,16 @@
                         <dd ng-if="blog.last_posted" sd-reldate ng-model="blog.last_posted"></dd>
                         <dd ng-if="blog.posts_count == 0"> No posts yet</dd>
                         </dl>
+                        <dt>Syndication</dt>
+                        <dd>
+                            <button 
+                                ng-click="syndicate(blog._id)"
+                                class="btn btn-default">Syndicatable</button>
+                        </dd>
                     </dl>
                 </div>
             </li>
         </ul>
     </div>
-
-    <!--<div sd-modal="" data-model="newBlogModalActive">-->
-    <!--        <div class="modal-header">-->
-    <!--            <button class="close" ng-click="cancelCreate()"><i class="icon-close-small"></i></button>-->
-    <!--            <h3 translate>Create New Blog</h3>-->
-    <!--        </div>-->
-    <!--        <div class="upload-progress" ng-show="progress.width">-->
-    <!--            <div class="bar" style="width: {{ progress.width }}%;"></div>-->
-    <!--        </div>-->
-    <!--        <div class="modal-body" style="min-height: 300px;">-->
-    <!--        <form ng-submit="createBlog()" name="createBlogForm">-->
-    <!--            <ul class="nav nav-tabs">-->
-    <!--                <li ng-class="{active: creationStep == 'Details'}">-->
-    <!--                    <button type="button" translate ng-click="switchTab('Details')">Details</button>-->
-    <!--                </li>-->
-    <!--                <li ng-class="{active: creationStep == 'Team'}">-->
-    <!--                    <button type="button" translate ng-disabled="!createBlogForm.$valid" ng-click="switchTab('Team')"-->
-    <!--                     ng-class="{'default-cursor': !createBlogForm.$valid}">Team</button>-->
-    <!--                </li>-->
-    <!--            </ul>-->
-    <!--            <div class="creation-steps">-->
-    <!--                <div data-title="Details" ng-if="creationStep === 'Details'">-->
-    <!--                    <fieldset>-->
-    <!--                        <div class="field">-->
-    <!--                            <label translate>Blog title</label>-->
-    <!--                            <input type="text" ng-model="newBlog.title" required ng-keydown="handleKeyDown($event, 'goToTeamTab')">-->
-    <!--                        </div>-->
-    <!--                        <div class="field">-->
-    <!--                            <label translate>Blog description</label>-->
-    <!--                            <div class="form-box"-->
-    <!--                                sd-text-editor-->
-    <!--                                data-config="{toolbar: {buttons: ['bold', 'italic', 'underline', 'strikethrough', 'orderedlist', 'unorderedlist'],sticky: false,static: true,align: 'left',updateOnEmptySelection: true}}"-->
-    <!--                                ng-model="newBlog.description"-->
-    <!--                            ></div>-->
-    <!--                        </div>-->
-    <!--                        <div class="field ">-->
-    <!--                            <label translate>Blog image</label>-->
-    <!--                            <div class="upload-form">-->
-    <!--                                <section-->
-    <!--                                    class="main"-->
-    <!--                                    sd-image-preview="preview.url"-->
-    <!--                                    data-file="preview.img"-->
-    <!--                                    data-progress-width="progress.width"-->
-    <!--                                >-->
-    <!--                                    <div class="upload-progress" ng-show="progress.width">-->
-    <!--                                        <div class="bar" style="width: {{ progress.width }}%;"></div>-->
-    <!--                                    </div>-->
-    <!--                                    <div class="computer" ng-if="!preview.url" ng-hide="progress.width">-->
-    <!--                                        <div class="dropzone" ng-file-drop="preview.img = $files[0]">-->
-    <!--                                            <div class="text" translate>Drop it here</div>-->
-    <!--                                            <div class="input-holder">-->
-    <!--                                                <input type="file" accept="image/*;capture=camera" ng-file-select="preview.img = $files[0]">-->
-    <!--                                            </div>-->
-    <!--                                            <div class="info" translate>The minimum image resolution should be 320x240 pixels.</div>-->
-    <!--                                        </div>-->
-    <!--                                    </div>-->
-    <!--                                    <div class="preview" ng-if="preview.url" ng-hide="progress.width">-->
-    <!--                                        <div class="original">-->
-    <!--                                            <div-->
-    <!--                                                sd-plain-image-->
-    <!--                                                data-src="preview.url"-->
-    <!--                                                data-file="preview.img"-->
-    <!--                                                data-progress-width="progress.width"-->
-    <!--                                                ></div>-->
-    <!--                                        </div>-->
-    <!--                                    </div>-->
-    <!--                                </section>-->
-    <!--                                </div>-->
-    <!--                        </div>-->
-    <!--                    </fieldset>-->
-    <!--                </div>-->
-    <!--                <div data-title="Team" ng-if="creationStep === 'Team'" class="team_settings">-->
-    <!--                    <div>-->
-    <!--                        <div lb-user-select-list data-members="blogMembers" data-onchoose="addMember(user)"></div>-->
-    <!--                        <div class="content">-->
-    <!--                            <p ng-if="message">{{ message }}</p>-->
-    <!--                            <div class="member-list clearfix">-->
-    <!--                                <ul>-->
-    <!--                                    <li ng-repeat="user in blogMembers" ng-class="{'inactive' : !user.is_enabled || !user.is_active}">-->
-    <!--                                        <i class="icon-close-small" ng-click="removeMember(user)"></i>-->
-    <!--                                        <figure class="avatar"><img sd-user-avatar data-src="user.picture_url"></figure>-->
-    <!--                                        <div class="name">{{user.display_name}}</div>-->
-    <!--                                    </li>-->
-    <!--                                </ul>-->
-    <!--                            </div>-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--        </form>-->
-    <!--        </div>-->
-
-    <!--        <div class="modal-footer">-->
-    <!--            <div ng-if="creationStep === 'Details'">-->
-    <!--                <span class="error">{{newBlogError}}</span>-->
-    <!--                <button class="btn btn-primary btn-info" type="button" ng-disabled="!createBlogForm.$valid"-->
-    <!--                translate ng-click="switchTab('Team')">Next</button>-->
-    <!--            </div>-->
-    <!--            <div ng-if="creationStep === 'Team'">-->
-    <!--                <button type="button" class="btn btn-default pull-left" translate ng-click="switchTab('Details')">Back</button>-->
-    <!--                <button type="button" class="btn btn-primary btn-info" translate ng-click="createBlog()">Create</button>-->
-    <!--            </div>-->
-    <!--        </div>-->
-    <!--</div>-->
-
-
-    <!--<div sd-modal="" data-model="showBlogAccessModal">-->
-    <!--    <div class="modal-header">-->
-    <!--        <button class="close" ng-click="closeAccessRequest()"><i class="icon-close-small"></i></button>-->
-    <!--        <h3 translate><strong>{{ ::accessRequestedTo.title }}</strong></h3>-->
-    <!--    </div>-->
-    <!--    <div class="modal-body">-->
-    <!--        <p translate>-->
-    <!--            Sorry, you are not allowed to access this blog.<br />-->
-    <!--            Ask the blog owner to add you to the team.-->
-    <!--        </p>-->
-    <!--    </div>-->
-    <!--    <div class="modal-footer">-->
-    <!--        <button type="button" class="btn btn-default" translate ng-click="closeAccessRequest()">Cancel</button>-->
-    <!--        <button type="submit" class="btn btn-primary btn-info pull-left" translate ng-click="requestAccess(accessRequestedTo)">Request Access</button>-->
-    <!--    </div>-->
-    <!--</div>-->
-
 
 </section>

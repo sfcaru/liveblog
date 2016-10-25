@@ -1,11 +1,6 @@
 liveblogSyndication
     .controller('SyndicationProducerBlogsController', 
         ['$scope', 'api', '$routeParams', function($scope, api, $routeParams) {
-            //api.producers.query($routeParams.id)
-            //    .then(function(producer) {
-            //        console.log('producer', producer);
-            //    });
-
             api.get('/producers/' + $routeParams.id + '/blogs')
                 .then(function(blogs) {
                     console.log('blogs', blogs);
@@ -13,4 +8,8 @@ liveblogSyndication
                     $scope.blogsLoading = false;
                     $scope.blogsView = 'grid';
                 });
+
+            $scope.syndicate = function(blogId) {
+                console.log('ima gonna syndicate that blog', blogId);
+            };
         }])
