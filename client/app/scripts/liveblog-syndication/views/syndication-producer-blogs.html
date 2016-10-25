@@ -4,6 +4,7 @@
         <button class="navbtn hover" href="/#/liveblog">
             <i class="icon-th-large"></i>
         </button>
+        <h2 class="page-nav-title">{{producer.name}}</h2>
         <ul class="nav nav-tabs pull-left" >
             <li ng-class="{active: activeState === state}" ng-repeat="state in states"><button ng-click="changeState(state)" translate>{{ ::state.text }}</button></li>
         </ul>

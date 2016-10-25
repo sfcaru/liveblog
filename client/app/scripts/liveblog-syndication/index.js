@@ -32,7 +32,7 @@ liveblogSyndication
                 resolve: {isArchivedFilterSelected: function() {return false;}}
             })
             .activity('/syndication/producers/:id', {
-                label: gettext('Producers Blogs'),
+                label: gettext('Producer Blogs'),
                 controller: 'SyndicationProducerBlogsController',
                 templateUrl: 'scripts/liveblog-syndication/views/syndication-producer-blogs.html',
                 //category: superdesk.MENU_MAIN,
