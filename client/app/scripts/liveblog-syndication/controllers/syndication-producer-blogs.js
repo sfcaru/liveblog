@@ -15,6 +15,6 @@ liveblogSyndication
                 });
 
             $scope.syndicate = function(blog) {
-                console.log('ima gonna syndicate that blog', blog._id, blog.syndicated);
+                console.log('Syndicate that blog', blog._id, blog.syndicated);
             };
         }])
