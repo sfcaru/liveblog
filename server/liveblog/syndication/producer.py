@@ -2,7 +2,7 @@ import json
 import logging
 from urllib.parse import urljoin
 import requests
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, Timeout
 from flask import abort
 from superdesk.resource import Resource
 from superdesk.services import BaseService
@@ -79,8 +79,8 @@ def producer_blogs(producer_id):
             'Authorization': producer['consumer_api_key'],
             'Origin': 'localhost',
             'Content-Type': 'application/json'
-        })
-    except ConnectionError:
+        }, timeout=5)
+    except (ConnectionError, Timeout):
         return _make_json_response(_make_error('Unable to connect to producer: {}'.format(api_url)))
     else:
         status_code = response.status_code
