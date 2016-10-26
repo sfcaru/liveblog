@@ -32,7 +32,7 @@ logger = logging.getLogger('superdesk')
 
 blogs_schema = {
     'title': metadata_schema['headline'],
-    'description': metadata_schema['description'],
+    'description': metadata_schema['description_text'],
     'picture_url': {
         'type': 'string',
         'nullable': True
@@ -42,8 +42,8 @@ blogs_schema = {
     'version_creator': metadata_schema['version_creator'],
     'versioncreated': metadata_schema['versioncreated'],
     'posts_order_sequence': {
-        'type': 'number',
-        'default': 0
+        'type': 'float',
+        'default': 0.00
     },
     'blog_status': {
         'type': 'string',
@@ -67,6 +67,10 @@ blogs_schema = {
     },
     'public_url': {
         'type': 'string'
+    },
+    'syndication_enabled': {
+        'type': 'boolean',
+        'default': False
     }
 }
 
@@ -94,8 +98,11 @@ def send_email_to_added_members(blog, recipients, origin):
     recipients_email = []
     for user in recipients:
         # if user want to receive email notification, we add him as recipient
-        if prefs_service.email_notification_is_enabled(user_id=user['user']):
-            user_doc = get_resource_service('users').find_one(req=None, _id=user['user'])
+        if prefs_service.email_notification_is_enabled(user_id=user):
+            if isinstance(user, ObjectId):
+                user_doc = get_resource_service('users').find_one(req=None, _id=ObjectId(user))
+            else:
+                user_doc = get_resource_service('users').find_one(req=None, _id=ObjectId(user['user']))
             recipients_email.append(user_doc['email'])
     if recipients_email:
         # send emails
@@ -122,6 +129,12 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
         except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
             if not safe:
                 raise e
+
+            public_url = '{}://{}/embed/{}'.format(app.config['URL_PROTOCOL'], app.config['SERVER_NAME'],
+                                                   blog.get('_id'))
+            get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
+            push_notification('blog', published=1, blog_id=str(blog.get('_id')), public_url=public_url)
+            return public_url
 
 
 @celery.task(soft_time_limit=1800)
@@ -159,7 +172,13 @@ class BlogService(BaseService):
             # notify client with websocket
             push_notification(self.notification_key, created=1, blog_id=str(blog.get('_id')))
             # and members with emails
-            recipients = blog.get('members', [])
+            members = blog.get('members', {})
+            recipients = []
+            for user in members:
+                if isinstance(user, ObjectId):
+                    recipients.append(user)
+                else:
+                    recipients.append(user['user'])
             notify_members(blog, app.config['CLIENT_URL'], recipients)
 
     def find_one(self, req, **lookup):
@@ -194,7 +213,10 @@ class BlogService(BaseService):
         recipients = []
         for user in members:
             if user not in original.get('members', []):
-                recipients.append(user)
+                if isinstance(user, ObjectId):
+                    recipients.append(user)
+                else:
+                    recipients.append(user['user'])
         notify_members(blog, app.config['CLIENT_URL'], recipients)
 
     def on_delete(self, doc):

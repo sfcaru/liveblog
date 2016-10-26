@@ -233,7 +233,7 @@ define([
             fetchNewDraftPage: function() {
                 vm.draftPostsInstance.fetchNewPage();
             },
-            fetchNewCommenttPage: function() {
+            fetchNewCommentsPage: function() {
                 vm.commentPostsInstance.fetchNewPage();
             },
             fetchNewTimelinePage: function() {
@@ -420,6 +420,7 @@ define([
                     blog_preferences: vm.blogPreferences,
                     original_creator: vm.original_creator._id,
                     blog_status: vm.blog_switch === true? 'open': 'closed',
+                    syndication_enabled: vm.syndication_enabled,
                     members: members
                 };
                 angular.extend(vm.newBlog, changedBlog);
@@ -572,6 +573,7 @@ define([
         }
         vm.changeTab('general');
         vm.blog_switch = vm.newBlog.blog_status === 'open'? true: false;
+        vm.syndication_enabled = vm.newBlog.syndication_enabled;
     }
 
     /**
@@ -705,6 +707,27 @@ define([
                         });
         };
     })
+    .factory('instagramService', ['$timeout', function($timeout) {
+        var insta = {};
+        insta.postHasEmbed = function(post) {
+            var hasInstagram = false;
+            angular.forEach(post, function(item) {
+                if (item.item.item_type === 'embed') {
+                    if (item.item.text.indexOf('platform.instagram.com') !== -1) {
+                        hasInstagram = true;
+                    }
+                }
+            });
+            return hasInstagram;
+        }
+        insta.processEmbeds = function() {
+            // take in accound the animations
+            $timeout(function() {
+                window.instgrm.Embeds.process();
+            }, 1000);
+        }
+        return insta;
+    }])
     .config(['embedlyServiceProvider', 'embedServiceProvider', 'config', function(embedlyServiceProvider, embedServiceProvider, config) {
         embedlyServiceProvider.setKey(config.embedly.key);
         embedServiceProvider.setConfig('facebookAppId', config.facebookAppId);
