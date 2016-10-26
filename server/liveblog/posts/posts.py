@@ -87,8 +87,8 @@ class PostsResource(ArchiveResource):
             'default': False
         },
         'order': {
-            'type': 'number',
-            'default': 0
+            'type': 'float',
+            'default': 0.00
         },
         'published_date': {
             'type': 'datetime'
@@ -119,7 +119,7 @@ class PostsService(ArchiveService):
 
     def get_next_order_sequence(self, blog_id):
         if blog_id is None:
-            return 0
+            return 0.00
         # get next order sequence and increment it
         blog = get_resource_service('blogs').find_and_modify(
             query={'_id': blog_id},
@@ -139,10 +139,10 @@ class PostsService(ArchiveService):
                     # save the order into the blog
                     get_resource_service('blogs').update(blog_id, {'posts_order_sequence': order + 1}, blog)
                 else:
-                    order = 0
+                    order = 0.00
         else:
-            order = 0
-        return order
+            order = 0.00
+        return float(order)
 
     def check_post_permission(self, post):
         to_be_checked = (
@@ -164,7 +164,7 @@ class PostsService(ArchiveService):
             # if you publish a post directly which is not a draft it will have a published_date assigned
             if doc['post_status'] == 'open':
                 doc['published_date'] = utcnow()
-                doc['content_updated_date'] = utcnow()
+                doc['content_updated_date'] = doc['published_date']
                 doc['publisher'] = getattr(flask.g, 'user', None)
         super().on_create(docs)
 
@@ -202,8 +202,12 @@ class PostsService(ArchiveService):
                 if item['text'] != original['groups'][1]['refs'][index]['item']['text']:
                     content_diff = True
                     break
-        if(content_diff):
+        if content_diff:
             updates['content_updated_date'] = utcnow()
+
+        # assure that the item is keept if the content wasn't changed.
+        if not content_diff and updates.get('groups', False):
+            updates['groups'][1]['refs'] = original['groups'][1]['refs']
         # check permission
         post = original.copy()
         post.update(updates)
@@ -214,6 +218,9 @@ class PostsService(ArchiveService):
             # if you publish a post it will save a published date and register who did it
             updates['published_date'] = utcnow()
             updates['publisher'] = getattr(flask.g, 'user', None)
+            # if you publish a post and hasn't `content_updated_date` add it.
+            if not updates.get('content_updated_date', False):
+                updates['content_updated_date'] = updates['published_date']
         # when unpublishing
         if original.get('post_status') == 'open' and updates.get('post_status') != 'open':
             updates['unpublished_date'] = utcnow()
