@@ -26,7 +26,7 @@
                         <span
                             sd-switch 
                             ng-change="syndicate(blog)" 
-                            ng-model="blog.syndicated" 
+                            ng-model="blog.autopublish" 
                             class="sms-switch"></span>
                     </dd>
                 </dl>
@@ -38,7 +38,7 @@
             class="btn btn-primary btn-info" 
             type="button"
             ng-click="attach()"
-            ng-disabled="blogsToAttach == 0"
+            ng-disabled="hasChanged"
             translate>Attach</button>
     </div>
 </div>
