@@ -86,6 +86,8 @@
                         <dd ng-if="blog.last_posted" sd-reldate ng-model="blog.last_posted"></dd>
                         <dd ng-if="blog.posts_count == 0"> No posts yet</dd>
                         </dl>
+                        <dt>{{ ::'Syndicatable' | translate }}:</dt>
+                        <dd>{{ blog.syndication_enabled ? 'Syndication' : 'Off' }}</dd>
                     </dl>
                 </div>
             </li>
