@@ -64,6 +64,13 @@ liveblogSyndication
                         IngestPanelActions.getProducerBlogs(producerId);
                     };
 
+                    scope.isAlreadySyndicated = function(blog) {
+                        if (scope.localProducerBlogIds.length == 0)
+                            return false;
+                        else
+                            return scope.localProducerBlogIds.indexOf(blog._id) != -1;
+                    };
+
                     scope.check = function(blog) {
                         blog.checked = (blog.hasOwnProperty('checked')) ? !blog.checked : true;
 
@@ -74,30 +81,6 @@ liveblogSyndication
 
                         compare();
                     };
-
-                    var syndicate = function(blog, method) {
-                        var uri = config.server.url + 
-                            '/producers/' + scope.currentProducer._id + 
-                            '/syndicate/' + blog._id;
-
-                        return $http({
-                            url: uri,
-                            method: (method == 'DELETE') ? 'DELETE' : 'POST',
-                            data: { consumer_blog_id: consumerBlogId },
-                            headers: {
-                                "Content-Type": "application/json;charset=utf-8"
-                            }
-                        })
-                        .then(function(response) {
-                            console.log('response to create/delete', response);
-                            return response;
-                        })
-                        .catch(function(err) {
-                            console.log('err', err);
-                            scope.modalActive = false;
-                        });
-                    };
-
 
                     scope.attach = function() {
                         var chain = [],
@@ -111,19 +94,19 @@ liveblogSyndication
                             );
 
                         scope.producerBlogs._items.forEach(function (blog) {
+                            var params = {
+                                producerId: scope.currentProducer._id,
+                                producerBlogId: blog._id,
+                                consumerBlogId: scope.consumerBlogId,
+                                autoPublish: blog.auto_publish,
+                                method: 'POST'
+                            };
+
                             if (toSyndicate.indexOf(blog._id) != -1)
-                                IngestPanelActions.syndicate(
-                                    scope.currentProducer,
-                                    scope.consumerBlogId,
-                                    blog, 
-                                    'POST'
-                                );
+                                IngestPanelActions.syndicate(params);
                             else if (toUnSyndicate.indexOf(blog._id) != -1)
                                 IngestPanelActions.syndicate(
-                                    scope.currentProducer,
-                                    scope.consumerBlogId,
-                                    blog, 
-                                    'DELETE'
+                                    angular.extend(params, { method: 'DELETE' })
                                 );
                         });
 

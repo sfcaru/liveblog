@@ -180,10 +180,14 @@ class PostsService(ArchiveService):
     def on_created(self, docs):
         super().on_created(docs)
         # invalidate cache for updated blog
-        post_ids = []
+        posts = []
         out_service = get_resource_service('syndication_out')
         for doc in docs:
-            post_ids.append(doc.get('_id'))
+            post = {}
+            post['id'] = doc.get('_id')
+            post['syndication_in'] = doc.get('syndication_in')
+            posts.append(post)
+            # post_ids.append({ id: doc.get('_id'), str('syndication_in'): doc.get('syndication_in')})
             app.blog_cache.invalidate(doc.get('blog'))
             # send post to consumer webhook
             if doc['post_status'] == 'open':
@@ -191,7 +195,7 @@ class PostsService(ArchiveService):
                 out_service.send_syndication_post(doc, action='created')
 
         # send notifications
-        push_notification('posts', created=True, post_status=doc['post_status'], post_ids=post_ids)
+        push_notification('posts', created=True, post_status=doc['post_status'], posts=posts)
 
     def on_update(self, updates, original):
         # check if the timeline is reordered
@@ -220,9 +224,6 @@ class PostsService(ArchiveService):
         if content_diff:
             updates['content_updated_date'] = utcnow()
 
-        # assure that the item is keept if the content wasn't changed.
-        if not content_diff and updates.get('groups', False):
-            updates['groups'][1]['refs'] = original['groups'][1]['refs']
         # check permission
         post = original.copy()
         post.update(updates)
@@ -236,6 +237,14 @@ class PostsService(ArchiveService):
             # if you publish a post and hasn't `content_updated_date` add it.
             if not updates.get('content_updated_date', False):
                 updates['content_updated_date'] = updates['published_date']
+            # assure that the item info is keept if is needed.
+            if original.get('post_status') == 'submitted' and updates.get('groups', False):
+                item_resource = get_resource_service('items')
+                for container in updates['groups'][1]['refs']:
+                    item_id = container.get('residRef')
+                    found = item_resource.find_one(req=None, _id=item_id)
+                    item_resource.update(item_id, {'original_creator': original.get('original_creator')}, found)
+
         # when unpublishing
         if original.get('post_status') == 'open' and updates.get('post_status') != 'open':
             updates['unpublished_date'] = utcnow()
@@ -243,16 +252,23 @@ class PostsService(ArchiveService):
 
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
+        out_service = get_resource_service('syndication_out')
         # invalidate cache for updated blog
         app.blog_cache.invalidate(original.get('blog'))
         # send notifications
         if updates.get('deleted', False):
+            out_service.send_syndication_post(original, action='deleted')
             push_notification('posts', deleted=True, post_id=original.get('_id'))
         # NOTE: Seems unsused, to be removed later if no bug appears.
         # elif updates.get('post_status') == 'draft':
         #     push_notification('posts', drafted=True, post_id=original.get('_id'),
         #                       author_id=original.get('original_creator'))
         else:
+            # Syndication
+            doc = original.copy()
+            doc.update(updates)
+            logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
+            out_service.send_syndication_post(doc, action='updated')
             push_notification('posts', updated=True)
 
     def get_item_update_data(self, item, links, delete=True):
@@ -267,6 +283,9 @@ class PostsService(ArchiveService):
         super().on_deleted(doc)
         # invalidate cache for updated blog
         app.blog_cache.invalidate(doc.get('blog'))
+        # Syndication
+        out_service = get_resource_service('syndication_out')
+        out_service.send_syndication_post(doc, action='deleted')
         # send notifications
         push_notification('posts', deleted=True)
 

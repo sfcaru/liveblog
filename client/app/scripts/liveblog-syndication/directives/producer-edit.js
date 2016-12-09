@@ -9,16 +9,25 @@ liveblogSyndication
                 onupdate: '&'
             },
             link: function(scope, elem) {
+                scope.producerForm.attempted = false;
+
                 scope.$watch('producer', function(producer) {
                     scope.isEditing = producer.hasOwnProperty('_id');
                     scope.origProducer = _.cloneDeep(producer);
                 });
 
                 scope.save = function() {
+                    scope.producerForm.attempted = true;
+
+                    if (!scope.producerForm.$valid)
+                        return;
+
                     if (angular.equals(scope.origProducer, scope.producer))
                         return;
 
                     var data = {}, apiQuery;
+
+                    data.contacts = scope.producer.contacts;
 
                     if (!scope.producerForm.name.$pristine)
                         data.name = scope.producer.name;
@@ -38,14 +47,7 @@ liveblogSyndication
                         notify.pop();
                         notify.success(gettext('producer saved.'));
 
-                        // If we are creating a new entry,
-                        // then we need to update the producer list accordingly.
-                        // Otherwise we just broadcast a cancel event
-                        // to close the modal
-                        if (!scope.isEditing)
-                            scope.onsave({ producer: result });
-                        else
-                            scope.oncancel();
+                        scope.onsave({ producer: result });
                     })
                     .catch(function(err) {
                         notify.pop();

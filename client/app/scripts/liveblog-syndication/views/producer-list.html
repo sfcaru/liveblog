@@ -20,24 +20,29 @@
                     <div class="users-table">
                         <ul class="table-header">
                             <li>
-                                <div class="row-wrapper">
+                                <div class="row-wrapper four-col">
                                     <div 
                                         class="name" 
                                         sd-sort 
                                         data-label="{{ 'Name' | translate }}" 
                                         data-field="name"></div>
 
-                                    <div 
-                                        class="email" 
-                                        sd-sort 
-                                        data-label="{{ 'Api url' | translate }}" 
+                                    <div
+                                        class="email"
+                                        sd-sort
+                                        data-label="{{ 'Api url' | translate }}"
                                         data-field="api_url"></div>
 
-                                    <div 
-                                        class="username" 
-                                        sd-sort 
-                                        data-label="{{ 'Consumer API key' | translate }}" 
+                                    <div
+                                        class="username"
+                                        sd-sort
+                                        data-label="{{ 'Consumer API key' | translate }}"
                                         data-field="consumer_api_key"></div>
+
+                                    <div 
+                                        sd-sort 
+                                        data-label="{{ 'Contact' | translate }}" 
+                                        data-field="contact"></div>
                                 </div>
                             </li>
                         </ul>
@@ -52,6 +57,12 @@
         </div>
 
         <div class="preview-pane" ng-if="selected.producer">
+            <header>
+                <button ng-click="selected.producer = null" class="close-preview">
+                    <i class="icon-close-small"></i>
+                </button>
+            </header>
+
             <div class="content" sd-user-details-pane ng-if="selected.producer">
                 <div
                     id="user-profile-edit" 
