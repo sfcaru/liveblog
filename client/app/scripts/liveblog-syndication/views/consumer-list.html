@@ -27,17 +27,22 @@
                                         data-label="{{ 'Name' | translate }}" 
                                         data-field="name"></div>
 
+                                    <div
+                                        class="email"
+                                        sd-sort
+                                        data-label="{{ 'Api url' | translate }}"
+                                        data-field="api_url"></div>
+
                                     <div 
-                                        class="api_key" 
+                                        class="name"
                                         sd-sort 
                                         data-label="{{ 'Api key' | translate }}" 
                                         data-field="api_key"></div>
 
-                                    <div
-                                        class="api_url"
-                                        sd-sort
-                                        data-label="{{ 'Api url' | translate }}"
-                                        data-field="api_url"></div>
+                                    <div 
+                                        sd-sort 
+                                        data-label="{{ 'Contact' | translate }}" 
+                                        data-field="contact"></div>
                                 </div>
                             </li>
                         </ul>
@@ -52,6 +57,12 @@
         </div>
 
         <div class="preview-pane" ng-if="selected.consumer">
+            <header>
+                <button ng-click="selected.consumer = null" class="close-preview">
+                    <i class="icon-close-small"></i>
+                </button>
+            </header>
+
             <div class="content" sd-user-details-pane ng-if="selected.consumer">
                 <div
                     id="user-profile-edit" 
@@ -62,4 +73,4 @@
             </div>
         </div>
     </div>
-</setion>
+</section>

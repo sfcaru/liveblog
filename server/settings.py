@@ -31,6 +31,7 @@ def env(variable, fallback_value=None):
         else:
             return env_value
 
+
 ABS_PATH = os.path.abspath(os.path.dirname(__file__))
 BEHAVE_TESTS_FIXTURES_PATH = os.path.join(ABS_PATH, 'features', 'steps', 'fixtures')
 XML = False
@@ -80,6 +81,7 @@ ELASTICSEARCH_URL = env('ELASTICSEARCH_URL', 'http://localhost:9200')
 ELASTICSEARCH_INDEX = env('ELASTICSEARCH_INDEX', 'liveblog')
 if env('ELASTIC_PORT'):
     ELASTICSEARCH_URL = env('ELASTIC_PORT').replace('tcp:', 'http:')
+ELASTICSEARCH_FORCE_REFRESH = env('ELASTICSEARCH_FORCE_REFRESH', 'True')
 
 REDIS_URL = env('REDIS_URL', 'redis://localhost:6379')
 if env('REDIS_PORT'):
@@ -133,6 +135,7 @@ INSTALLED_APPS = [
     'liveblog.global_preferences',
     'liveblog.client_modules',
     'liveblog.syndication',
+    'liveblog.blogslist'
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
@@ -259,3 +262,7 @@ DEFAULT_URGENCY_VALUE_FOR_MANUAL_ARTICLES = env('DEFAULT_URGENCY_VALUE_FOR_MANUA
 
 ORGANIZATION_NAME = "Sourcefabric"
 ORGANIZATION_NAME_ABBREVIATION = "SF"
+
+# Syndication Global Settings
+SYNDICATION_CELERY_MAX_RETRIES = env('SYNDICATION_CELERY_MAX_RETRIES', 5)
+SYNDICATION_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)

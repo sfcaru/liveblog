@@ -1,8 +1,10 @@
 import logging
+from bson import ObjectId
 from flask import request, abort, Blueprint
 from superdesk.services import BaseService
 from superdesk import get_resource_service
 from liveblog.blogs.blogs import blogs_schema
+from liveblog.posts.posts import PostsResource
 from flask_cors import CORS
 
 from .utils import api_error, api_response
@@ -30,6 +32,27 @@ class BlogResource(CustomAuthResource):
     }
     schema = blogs_schema
     item_methods = ['GET']
+    resource_methods = ['GET']
+
+
+class BlogPostsService(BaseService):
+    notification_key = 'syndication_blog_posts'
+
+    def get(self, req, lookup):
+        if lookup.get('blog_id'):
+            lookup['blog'] = ObjectId(lookup['blog_id'])
+            del lookup['blog_id']
+        return super().get(req, lookup)
+
+
+class BlogPostsResource(CustomAuthResource):
+    url = 'syndication/blogs/<regex("[a-f0-9]{24}"):blog_id>/posts'
+    schema = PostsResource.schema
+    datasource = PostsResource.datasource
+    authentication = ConsumerApiKeyAuth
+    item_methods = ['GET']
+    resource_methods = ['GET']
+    privileges = {'GET': 'posts'}
 
 
 def _get_consumer_from_auth():
@@ -40,22 +63,31 @@ def _get_consumer_from_auth():
 
 
 def _create_blogs_syndicate(blog_id, consumer_blog_id):
+    # Get the blog to be syndicated - must be enabled for syndication
+    blogs_service = get_resource_service('blogs')
+    blog = blogs_service.find_one(req=None, checkUser=False, _id=blog_id)
+    if blog is None:
+        return api_error('No blog available for syndication with given id "{}".'.format(blog_id), 409)
+    if not blog['syndication_enabled']:
+        return api_error('blog is not enabled for syndication', 409)
+
     consumer = _get_consumer_from_auth()
     out_service = get_resource_service('syndication_out')
     consumer_id = str(consumer['_id'])
     if out_service.is_syndicated(consumer_id, blog_id, consumer_blog_id):
         return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
-    else:
-        syndication_id = out_service.post([{
-            'blog_id': blog_id,
-            'consumer_id': consumer_id,
-            'consumer_blog_id': consumer_blog_id
-        }])[0]
-        syndication = out_service.find_one(_id=syndication_id, req=None)
-        return api_response({
-            'token': syndication['token'],
-            'consumer_blog_id': consumer_blog_id  # we return it anyway for consistency.
-        }, 201)
+    "{}"
+    syndication_id = out_service.post([{
+        'blog_id': blog_id,
+        'consumer_id': consumer_id,
+        'consumer_blog_id': consumer_blog_id
+    }])[0]
+    syndication = out_service.find_one(_id=syndication_id, req=None)
+    return api_response({
+        'token': syndication['token'],
+        'producer_blog_title': blog['title'],
+        'consumer_blog_id': consumer_blog_id  # we return it anyway for consistency.
+    }, 201)
 
 
 def _delete_blogs_syndicate(blog_id, consumer_blog_id):

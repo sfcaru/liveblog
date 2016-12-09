@@ -9,17 +9,26 @@ liveblogSyndication
                 onupdate: '&'
             },
             link: function(scope, elem) {
+                scope.consumerForm.attempted = false;
+
                 scope.$watch('consumer', function(consumer) {
                     scope.isEditing = consumer.hasOwnProperty('_id');
                     scope.origConsumer = _.cloneDeep(consumer);
                 });
 
                 scope.save = function() {
+                    scope.consumerForm.attempted = true;
+
+                    if (!scope.consumerForm.$valid)
+                        return;
+
                     if (angular.equals(scope.origConsumer, scope.consumer))
                         return;
 
                     var data = {};
                     var apiQuery;
+
+                    data.contacts = scope.consumer.contacts;
 
                     if (!scope.consumerForm.name.$pristine)
                         data.name = scope.consumer.name;
@@ -36,14 +45,7 @@ liveblogSyndication
                         notify.pop();
                         notify.success(gettext('consumer saved.'));
 
-                        // If we are creating a new entry,
-                        // then we need to update the consumer list accordingly.
-                        // Otherwise we just broadcast a cancel event
-                        // to close the modal
-                        if (!scope.isEditing)
-                            scope.onsave({ consumer: result });
-                        else
-                            scope.oncancel();
+                        scope.onsave({ consumer: result });
                     })
                     .catch(function(err) {
                         notify.pop();
