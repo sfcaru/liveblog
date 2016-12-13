@@ -135,7 +135,8 @@ INSTALLED_APPS = [
     'liveblog.global_preferences',
     'liveblog.client_modules',
     'liveblog.syndication',
-    'liveblog.blogslist'
+    'liveblog.blogslist',
+    'liveblog.marketplace'
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
@@ -266,3 +267,6 @@ ORGANIZATION_NAME_ABBREVIATION = "SF"
 # Syndication Global Settings
 SYNDICATION_CELERY_MAX_RETRIES = env('SYNDICATION_CELERY_MAX_RETRIES', 5)
 SYNDICATION_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)
+
+# Marketplace Settings
+MARKETPLACE_APP_URL = env('MARKETPLACE_APP_URL', '')
