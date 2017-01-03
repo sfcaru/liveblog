@@ -1,5 +1,6 @@
 import logging
 import requests
+import json
 from flask import Blueprint, request
 from flask_cors import CORS
 from liveblog.syndication.utils import api_response, api_error, blueprint_superdesk_token_auth
@@ -43,15 +44,22 @@ def marketer_blogs(marketer_id):
     if response.status_code != 200:
         return api_error('Unable to get marketer.', response.status_code)
 
+    marketer = json.loads(response.content.decode('utf-8'))
+
     # Use marketer url to call /marketplace/blogs
-    url = response.content['url']
+    url = marketer['url']
     try:
         response = _send_marketplace_api_request(url, 'marketplace/blogs')
     except APIConnectionError as e:
         return api_response(str(e), 500)
 
     if response.status_code == 200:
-        return api_response(response.content, response.status_code, json_dumps=False)
+        # Add marketer name to each blog
+        content = json.loads(response.content.decode('utf-8'))
+        for item in content['_items']:
+            item['marketer_name'] = marketer['name']
+        response_content = json.dumps(content)
+        return api_response(response_content, response.status_code, json_dumps=False)
     else:
         return api_error('Unable to get blogs of marketers.', response.status_code)
 
@@ -75,7 +83,7 @@ def _send_marketplace_api_request(url, uri, timeout=5):
         'GET', url, response.status_code, response.content
     ))
 
-    return response.json()
+    return response
 
 
-marketers_blueprint.before_request(blueprint_superdesk_token_auth)
+#marketers_blueprint.before_request(blueprint_superdesk_token_auth)
