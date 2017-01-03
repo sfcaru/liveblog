@@ -9,6 +9,8 @@ liveblogMarketplace
             ].join(' ');
 
             $scope.blog = {};
+            $scope.backwardUrl = '/#/marketplace/' + 
+                $routeParams.type + '/' + $routeParams.producerId;
 
             var onReceivedData = function(data) {
                 data._items.forEach(function(item) {
