@@ -12,7 +12,7 @@ liveblogMarketplace
                 adminTools: true,
                 resolve: {isArchivedFilterSelected: function() {return false;}}
             })
-            .activity('/marketplace/:type/:id/blogs/:blogId', {
+            .activity('/marketplace/:type/:producerId/blogs/:blogId', {
                 label: gettext('Marketplace'),
                 controller: 'PreviewController',
                 templateUrl: 'scripts/liveblog-marketplace/views/preview.html',
