@@ -21,7 +21,7 @@
         <ul class="card-list">
             <li
                 ng-repeat="blog in blogs._items track by blog._id"
-                ng-click="openEmbedModal(blog)"
+                ng-click="open(blog)"
                 class="can-access">
                 <figure class="media">
                     <div ng-if="blog.picture_url" if-background-image="{{blog.picture_url}}"></div>

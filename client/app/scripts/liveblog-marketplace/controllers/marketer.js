@@ -1,6 +1,6 @@
 liveblogMarketplace
-    .controller('MarketerController', ['$scope', '$sce', 'api', '$routeParams',
-        function($scope, $sce, api, $routeParams) {
+    .controller('MarketerController', ['$scope', '$sce', 'api', '$routeParams', '$location',
+        function($scope, $sce, api, $routeParams, $location) {
             var iframeAttrs = [
                 'width="100%"',
                 'height="715"',
@@ -13,16 +13,28 @@ liveblogMarketplace
 //                { text: 'Archived Blogs' }
 //            ];
 
-            $scope.embedModal = false;
+            //$scope.embedModal = false;
             $scope.active = 'preview';
 
-            $scope.openEmbedModal = function(blog) {
-                $scope.embedModal = true;
-                $scope.currentBlog = blog;
-            };
+            //$scope.openEmbedModal = function(blog) {
+            //    $scope.embedModal = true;
+            //    $scope.currentBlog = blog;
+            //};
 
-            $scope.cancelEmbed = function() {
-                $scope.embedModal = false;
+            //$scope.cancelEmbed = function() {
+            //    $scope.embedModal = false;
+            //};
+
+            $scope.open = function(blog) {
+                var url = [
+                    '/marketplace',
+                    $routeParams.type,
+                    $routeParams.id,
+                    'blogs',
+                    blog._id
+                ].join('/');
+
+                $location.path(url);
             };
 
             if ($routeParams.type == 'marketers')

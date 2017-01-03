@@ -12,6 +12,14 @@ liveblogMarketplace
                 adminTools: true,
                 resolve: {isArchivedFilterSelected: function() {return false;}}
             })
+            .activity('/marketplace/:type/:id/blogs/:blogId', {
+                label: gettext('Marketplace'),
+                controller: 'PreviewController',
+                templateUrl: 'scripts/liveblog-marketplace/views/preview.html',
+                category: superdesk.MENU_MAIN,
+                priority: 100,
+                resolve: {isArchivedFilterSelected: function() {return false;}}
+            })
             .activity('/marketplace/:type/:id', {
                 label: gettext('Marketplace'),
                 controller: 'MarketerController',
