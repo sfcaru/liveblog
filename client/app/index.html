@@ -183,6 +183,7 @@
     <script src="scripts/liveblog-syndication/directives/notifications-count.js"></script>
     <script src="scripts/liveblog-syndication/directives/first-contact.js"></script>
     <script src="scripts/liveblog-syndication/directives/ingest-panel.js"></script>
+    <script src="scripts/liveblog-syndication/directives/ingest-panel-dropdown.js"></script>
     <script src="scripts/liveblog-syndication/directives/copy-to-clipboard.js"></script>
     <script src="scripts/liveblog-syndication/directives/attach-syndicated-blogs-modal.js"></script>
     <script src="scripts/liveblog-syndication/directives/incoming-syndication.js"></script>
@@ -197,13 +198,6 @@
     <script src="scripts/liveblog-syndication/controllers/producers.js"></script>
     <script src="scripts/liveblog-syndication/directives/producer-edit.js"></script>
     <script src="scripts/liveblog-syndication/directives/producer-list.js"></script>
-
-    <!--Liveblog Marketplace-->
-    <script src="scripts/liveblog-marketplace/index.js"></script>
-    <script src="scripts/liveblog-marketplace/controllers/marketplace.js"></script>
-    <script src="scripts/liveblog-marketplace/controllers/marketer.js"></script>
-    <script src="scripts/liveblog-marketplace/directives/marketers-grid.js"></script>
-    <script src="scripts/liveblog-marketplace/directives/producers-grid.js"></script>
     <!-- endbuild -->
 
     <script src="scripts/lb-templates.js"></script>
@@ -227,8 +221,6 @@
             'liveblog.posts',
             'liveblog.blog',
             'liveblog.themes',
-            'liveblog.syndication',
-            'liveblog.marketplace',
             'superdesk.settings',
             'superdesk.dashboard',
             'superdesk.users',
@@ -258,6 +250,9 @@
             'lb.templates',
             'ngMessages'
         ];
+
+        if (config.syndication)
+            modules.push('liveblog.syndication');
 
         require([
             'main',
