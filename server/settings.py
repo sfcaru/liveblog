@@ -137,7 +137,7 @@ INSTALLED_APPS = [
     'liveblog.client_modules',
     'liveblog.syndication',
     'liveblog.blogslist',
-    'liveblog.marketplace'
+    'liveblog.freetypes',
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
